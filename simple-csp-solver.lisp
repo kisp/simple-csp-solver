@@ -28,7 +28,7 @@
                   (destructuring-bind ,symbols indices
                     (declare (array-index ,@symbols))
                     (lambda (vars)
-                      #+nil(declare (optimize speed (safety 0) (debug 0)))
+                      (declare (optimize speed (safety 0) (debug 0)))
                       (declare (vars vars))
                       (funcall fn ,@ (mapcar (lambda (s) `(aref vars ,s)) symbols)))))))
            (quux (n)
