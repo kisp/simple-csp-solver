@@ -139,21 +139,37 @@
              (loop for tail on vars
                    for x = (car tail)
                    do (dolist (y (cdr tail))
-                        (constraint #'/= x y)))))
-    (let* ((n 4)
-           (dom (iota n :start 1))
-           (vars (loop repeat n collect (make-var dom)))
-           (ivs (loop repeat (1- n) collect (make-var dom))))
-      (pairwise-distinct vars)
-      (pairwise-distinct ivs)
-      ;; vars and ivs
-      (loop for tail on vars
-            for iv in ivs
-            for x = (car tail)
-            for y = (second tail)
-            do (constraint #'diff x y iv))
-      (is (equal '((1 4 2 3 3 2 1) (2 3 1 4 1 2 3) (3 2 4 1 1 2 3) (4 1 3 2 3 2 1))
-                 (search-all (append vars ivs)))))))
+                        (constraint #'/= x y))))
+           (build-vars (n)
+             (let* ((dom (iota n :start 1))
+                    (vars (loop repeat n collect (make-var dom)))
+                    (ivs (loop repeat (1- n) collect (make-var dom))))
+               (pairwise-distinct vars)
+               (pairwise-distinct ivs)
+               ;; vars and ivs
+               (loop for tail on vars
+                     for iv in ivs
+                     for x = (car tail)
+                     for y = (second tail)
+                     do (constraint #'diff x y iv))
+               (append vars ivs)))
+           (all-rows (n)
+             (search-all (build-vars n)))
+           (count-rows (n)
+             (count-solutions (build-vars n))))
+    (is (equal '((1 2 1) (2 1 1))
+               (all-rows 2)))
+    (is (equal '((1 3 2 2 1) (2 1 3 1 2) (2 3 1 1 2) (3 1 2 2 1))
+               (all-rows 3)))
+    (is (equal '((1 4 2 3 3 2 1) (2 3 1 4 1 2 3) (3 2 4 1 1 2 3) (4 1 3 2 3 2 1))
+               (all-rows 4)))
+    (is (equal '((1 5 2 4 3 4 3 2 1) (2 3 5 1 4 1 2 4 3) (2 5 1 3 4 3 4 2 1)
+                 (3 2 4 1 5 1 2 3 4) (3 4 2 5 1 1 2 3 4) (4 1 5 3 2 3 4 2 1)
+                 (4 3 1 5 2 1 2 4 3) (5 1 4 2 3 4 3 2 1))
+               (all-rows 5)))
+    (is (equal 24 (count-rows 6)))
+    (is (equal 32 (count-rows 7)))
+    (is (equal 40 (count-rows 8)))))
 
 (deftest test.16
   (let* ((d (iota 5 :start 1))
@@ -190,3 +206,20 @@
     (is (equal '((5 3 2 5)) (search-all (list d b a c))))
     (is (equal '((2 3 5 5)) (search-all (list a b d c))))
     (is (equal '((3 2 5 5)) (search-all (list b a d c))))))
+
+(deftest test.17
+  (let ((a (make-var '(1 2 3)))
+        (b (make-var '(1 2 3))))
+    (constraint (curry #'= 2) a)
+    (constraint (curry #'= 3) b)
+    (is (equal '((2 3))
+               (search-all (list a b))))))
+
+(deftest test.18
+  (labels ((build-vars (n)
+             (let ((vars (loop for i from 1 to n collect (make-var (list 0 i)))))
+               (apply #'constraint #'= vars)
+               vars)))
+    (loop for n from 2 to 16
+          do (is (equal (list (make-list n :initial-element 0))
+                        (search-all (build-vars n)))))))
