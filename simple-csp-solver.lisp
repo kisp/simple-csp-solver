@@ -75,7 +75,9 @@
         (vars (coerce domains 'simple-vector))
         (n (length domains))
         (pos 0))
+    (declare (optimize speed (safety 0) (debug 0)))
     (declare (vars domains state vars constraint-vector))
+    (declare (function fn))
     (declare (fixnum pos n))
     (macrolet ((update-vars ()
                  '(setf (aref vars pos) (pop (aref state pos))))
@@ -90,7 +92,7 @@
                (partial-solution-ok ()
                  '(block nil
                    (dolist (constraint (aref constraint-vector pos) t)
-                     (unless (funcall constraint vars)
+                     (unless (funcall (the function constraint) vars)
                        (return nil)))))
                (forward ()
                  '(incf pos))
