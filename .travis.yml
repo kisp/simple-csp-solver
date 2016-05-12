@@ -1,5 +1,7 @@
 language: lisp
 
+sudo: required
+
 env:
   matrix:
     #- LISP=abcl
@@ -19,9 +21,6 @@ env:
 
 install:
   - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
-  - if [ "${LISP:(-2)}" = "32" ]; then
-      sudo apt-get install -y libc6-dev-i386 libffi-dev:i386;
-    fi
   - mkdir -p ~/quicklisp/dists/pauldist
   - curl -L http://pauldist.kisp.in/pauldist.txt > ~/quicklisp/dists/pauldist/distinfo.txt
   - touch  ~/quicklisp/dists/pauldist/enabled.txt
