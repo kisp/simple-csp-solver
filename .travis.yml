@@ -20,7 +20,7 @@ env:
 #     - env: LISP=ccl32
 
 install:
-  - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
+  - curl -L https://github.com/sionescu/cl-travis/raw/master/install.sh | sh
   - mkdir -p ~/quicklisp/dists/pauldist
   - curl -L http://pauldist.kisp.in/pauldist.txt > ~/quicklisp/dists/pauldist/distinfo.txt
   - touch  ~/quicklisp/dists/pauldist/enabled.txt
