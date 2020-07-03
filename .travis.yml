@@ -7,7 +7,7 @@ env:
   matrix:
     - LISP=sbcl-bin
     - LISP=ccl-bin
-    - LISP=abcl
+    #- LISP=abcl
     - LISP=clisp
     - LISP=ecl
 
