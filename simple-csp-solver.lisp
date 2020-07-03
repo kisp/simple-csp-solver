@@ -99,20 +99,20 @@
                (at-last-pos ()
                  '(= pos (1- n))))
       (loop
-        (if (backtrack-needed)
-            (backtrack)
-            (progn
-              (update-vars)
-              (when (partial-solution-ok)
-                (if (at-last-pos)
-                    (funcall fn vars)
-                    (forward)))))))))
+         (if (backtrack-needed)
+             (backtrack)
+             (progn
+               (update-vars)
+               (when (partial-solution-ok)
+                 (if (at-last-pos)
+                     (funcall fn vars)
+                     (forward)))))))))
 
 (defun build-constraint-vector (constraints vars)
   (let ((v (make-array (length vars) :initial-element nil)))
     (declare (vars v))
     (dolist (constraint constraints
-                        v)
+             v)
       (let* ((indices (constraint-indices vars constraint))
              (max (find-max indices)))
         (push
