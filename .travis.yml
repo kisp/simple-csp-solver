@@ -9,11 +9,11 @@ env:
     - LISP=abcl
     #- LISP=allegro
     - LISP=sbcl
-    - LISP=sbcl32
+    #- LISP=sbcl32
     - LISP=ccl
-    - LISP=ccl32
+    #- LISP=ccl32
     - LISP=clisp
-    - LISP=clisp32
+    #- LISP=clisp32
     #- LISP=cmucl
     - LISP=ecl
 
