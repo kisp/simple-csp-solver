@@ -1,8 +1,7 @@
 language: lisp
-
 sudo: required
 
-#dist: trusty
+# https://gist.github.com/fukamachi/52dce85caf477043ffeb
 
 env:
   matrix:
@@ -11,10 +10,6 @@ env:
     - LISP=abcl
     - LISP=clisp
     - LISP=ecl
-
-# matrix:
-#   allow_failures:
-#     - env: LISP=ccl32
 
 install:
   - curl -L https://raw.githubusercontent.com/snmsts/roswell/release/scripts/install-for-ci.sh | sh
