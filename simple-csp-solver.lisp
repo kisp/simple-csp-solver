@@ -8,8 +8,23 @@
 (defun make-var (domain &optional name)
   (%make-var :domain domain :name name))
 
+(defmethod print-object ((self var) stream)
+  (pprint-logical-block (stream nil)
+    (print-unreadable-object (self stream :type t)
+      (format stream "~_DOMAIN: ~S ~_NAME: ~S ~_CONSTRAINTS: ~S"
+              (var-domain self)
+              (var-name self)
+              (length (var-constraints self))))))
+
 (defstruct (constraint (:constructor %make-constraint))
   predicate vars)
+
+(defmethod print-object ((self constraint) stream)
+  (pprint-logical-block (stream nil)
+    (print-unreadable-object (self stream :type t)
+      (format stream "~_PREDICATE: ~S ~_VARS: ~S"
+              (constraint-predicate self)
+              (constraint-vars self)))))
 
 (defun constraint (predicate var &rest vars)
   (let ((vars (cons var vars)))
