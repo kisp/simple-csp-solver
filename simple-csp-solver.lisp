@@ -45,7 +45,7 @@
                     (lambda (vars)
                       (declare (optimize speed (safety 0) (debug 0)))
                       (declare (vars vars))
-                      (funcall fn ,@ (mapcar (lambda (s) `(aref vars ,s)) symbols)))))))
+                      (funcall fn ,@(mapcar (lambda (s) `(aref vars ,s)) symbols)))))))
            (quux (n)
              `(progn ,@(mapcar (lambda (x) `(frob ,x))
                                (iota n :start 1)))))
