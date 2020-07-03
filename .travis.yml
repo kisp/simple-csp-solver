@@ -21,7 +21,7 @@ install:
   - mkdir -p ~/.roswell/lisp/quicklisp/dists/pauldist
   - curl -L http://pauldist.kisp.in/pauldist.txt > ~/.roswell/lisp/quicklisp/dists/pauldist/distinfo.txt
   - touch  ~/.roswell/lisp/quicklisp/dists/pauldist/enabled.txt
-  - ros -e '(format t "~A ~A~%" (lisp-implementation-type) (lisp-implementation-version))'
 
 script:
+  - ros -e '(format t "~A ~A~%" (lisp-implementation-type) (lisp-implementation-version))'
   - ros -s simple-csp-solver-test -e '(uiop:quit (if (myam:load-and-run! "simple-csp-solver-test") 0 1))'
