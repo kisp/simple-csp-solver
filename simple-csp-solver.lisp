@@ -123,7 +123,7 @@
                      (funcall fn vars)
                      (forward)))))))))
 
-(defun build-constraint-vector (constraints vars)
+(defun build-constraint-vector (vars constraints)
   (let ((v (make-array (length vars) :initial-element nil)))
     (declare (vars v))
     (dolist (constraint constraints
@@ -136,13 +136,19 @@
           indices)
          (aref v max))))))
 
+(defun collect-constraints (vars)
+  (let ((hash (make-hash-table)))
+    (dolist (var vars)
+      (dolist (constraint (var-constraints var))
+        (setf (gethash constraint hash) t)))
+    (hash-table-keys hash)))
+
 (defun map-solutions (fn vars)
-  (let ((constraints (when vars (reduce #'union vars :key #'var-constraints))))
-    (when vars
-      (map-vector
-       fn
-       (mapcar #'var-domain vars)
-       (build-constraint-vector constraints vars)))))
+  (when vars
+    (map-vector
+     fn
+     (mapcar #'var-domain vars)
+     (build-constraint-vector vars (collect-constraints vars)))))
 
 (defun search-one (vars)
   (map-solutions

@@ -223,3 +223,25 @@
     (loop for n from 2 to 16
           do (is (equal (list (make-list n :initial-element 0))
                         (search-all (build-vars n)))))))
+
+(deftest pairwise-distinct.50
+  (labels ((pairwise-distinct (vars)
+             (loop for tail on vars
+                for x = (car tail)
+                do (dolist (y (cdr tail))
+                     (constraint #'/= x y)))))
+    (let* ((n 50)
+           (vars (loop repeat n collect (make-var (iota n)))))
+      (pairwise-distinct vars)
+      (is (equal (iota n) (search-one vars))))))
+
+(deftest pairwise-distinct.500
+  (labels ((pairwise-distinct (vars)
+             (loop for tail on vars
+                for x = (car tail)
+                do (dolist (y (cdr tail))
+                     (constraint #'/= x y)))))
+    (let* ((n 500)
+           (vars (loop repeat n collect (make-var (iota n)))))
+      (pairwise-distinct vars)
+      (is (equal (iota n) (search-one vars))))))
