@@ -31,5 +31,6 @@ install:
   #- git clone --depth=1 git://github.com/cl-babel/babel.git ~/lisp/babel
 
 script:
-  - cl -e '(ql:quickload "simple-csp-solver-test")
+  - cl -e '(SB-EXT:ENABLE-DEBUGGER)
+           (ql:quickload "simple-csp-solver-test")
            (uiop:quit (if (myam:load-and-run! "simple-csp-solver-test") 0 1))'
