@@ -132,18 +132,17 @@
           (constraint-vars constraint)))
 
 (defun build-constraint-vector (vars constraints)
-  (let ((v (make-array (length vars) :initial-element nil))
+  (let ((constraint-vector (make-array (length vars) :initial-element nil))
         (var-indices (make-var-indices vars)))
-    (declare (vars v))
-    (dolist (constraint constraints
-             v)
+    (declare (vars constraint-vector))
+    (dolist (constraint constraints constraint-vector)
       (let* ((indices (constraint-indices constraint var-indices))
-             (max (find-max indices)))
+             (max-index (find-max indices)))
         (push
          (wrap-predicate
           (constraint-predicate constraint)
           indices)
-         (aref v max))))))
+         (aref constraint-vector max-index))))))
 
 (defun collect-constraints (vars)
   (let ((hash (make-hash-table)))
