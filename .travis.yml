@@ -1,33 +1,22 @@
 language: lisp
-
 sudo: required
+
+# https://gist.github.com/fukamachi/52dce85caf477043ffeb
 
 env:
   matrix:
+    - LISP=sbcl-bin
+    - LISP=ccl-bin
     - LISP=abcl
-    #- LISP=allegro
-    - LISP=sbcl
-    - LISP=sbcl32
-    - LISP=ccl
-    - LISP=ccl32
     - LISP=clisp
-    - LISP=clisp32
-    #- LISP=cmucl
     - LISP=ecl
 
-# matrix:
-#   allow_failures:
-#     - env: LISP=ccl32
-
 install:
-  - curl -L https://github.com/sionescu/cl-travis/raw/master/install.sh | sh
-  - mkdir -p ~/quicklisp/dists/pauldist
-  - curl -L http://pauldist.kisp.in/pauldist.txt > ~/quicklisp/dists/pauldist/distinfo.txt
-  - touch  ~/quicklisp/dists/pauldist/enabled.txt
-  #- git clone --depth=1 git://github.com/trivial-features/trivial-features.git ~/lisp/trivial-features
-  #- git clone git://common-lisp.net/projects/alexandria/alexandria.git ~/lisp/alexandria
-  #- git clone --depth=1 git://github.com/cl-babel/babel.git ~/lisp/babel
+  - curl -L https://raw.githubusercontent.com/snmsts/roswell/release/scripts/install-for-ci.sh | sh
+  - mkdir -p ~/.roswell/lisp/quicklisp/dists/pauldist
+  - curl -L http://pauldist.kisp.in/pauldist.txt > ~/.roswell/lisp/quicklisp/dists/pauldist/distinfo.txt
+  - touch  ~/.roswell/lisp/quicklisp/dists/pauldist/enabled.txt
 
 script:
-  - cl -e '(ql:quickload "simple-csp-solver-test")
-           (uiop:quit (if (myam:load-and-run! "simple-csp-solver-test") 0 1))'
+  - ros -e '(format t "~A ~A~%" (lisp-implementation-type) (lisp-implementation-version))'
+  - ros -s simple-csp-solver-test -e '(uiop:quit (if (myam:load-and-run! "simple-csp-solver-test") 0 1))'
