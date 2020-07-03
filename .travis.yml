@@ -2,6 +2,8 @@ language: lisp
 
 sudo: required
 
+dist: trusty
+
 env:
   matrix:
     - LISP=abcl
