@@ -76,10 +76,6 @@
     (12 (funcall-with-aref-12 predicate indices))
     (t (apply-with-aref predicate indices))))
 
-(defun constraint-indices (vars constraint)
-  (mapcar (lambda (var) (position var vars))
-          (constraint-vars constraint)))
-
 (defun find-max (list)
   (declare (cons list))
   (loop for x in list maximize x))
@@ -123,12 +119,25 @@
                      (funcall fn vars)
                      (forward)))))))))
 
+(defun make-var-indices (vars)
+  (let ((hash (make-hash-table)))
+    (loop
+       for var in vars
+       for i upfrom 0
+       do (setf (gethash var hash) i))
+    hash))
+
+(defun constraint-indices (constraint var-indices)
+  (mapcar (lambda (var) (gethash var var-indices))
+          (constraint-vars constraint)))
+
 (defun build-constraint-vector (vars constraints)
-  (let ((v (make-array (length vars) :initial-element nil)))
+  (let ((v (make-array (length vars) :initial-element nil))
+        (var-indices (make-var-indices vars)))
     (declare (vars v))
     (dolist (constraint constraints
              v)
-      (let* ((indices (constraint-indices vars constraint))
+      (let* ((indices (constraint-indices constraint var-indices))
              (max (find-max indices)))
         (push
          (wrap-predicate

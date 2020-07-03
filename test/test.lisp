@@ -245,3 +245,14 @@
            (vars (loop repeat n collect (make-var (iota n)))))
       (pairwise-distinct vars)
       (is (equal (iota n) (search-one vars))))))
+
+(deftest pairwise-distinct.1000
+  (labels ((pairwise-distinct (vars)
+             (loop for tail on vars
+                for x = (car tail)
+                do (dolist (y (cdr tail))
+                     (constraint #'/= x y)))))
+    (let* ((n 1000)
+           (vars (loop repeat n collect (make-var (iota n)))))
+      (pairwise-distinct vars)
+      (is (equal (iota n) (search-one vars))))))
