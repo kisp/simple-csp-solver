@@ -33,8 +33,6 @@
       (dolist (var vars constraint)
         (push constraint (var-constraints var))))))
 
-(deftype vars () 'simple-vector)
-
 (macrolet ((frob (n)
              (let ((symbols (loop repeat n collect (gensym))))
                `(defun ,(symbolicate "FUNCALL-WITH-AREF-" (princ-to-string n))
@@ -44,7 +42,7 @@
                     (declare (array-index ,@symbols))
                     (lambda (vars)
                       (declare (optimize speed (safety 0) (debug 0)))
-                      (declare (vars vars))
+                      (declare (simple-vector vars))
                       (funcall fn ,@(mapcar (lambda (s) `(aref vars ,s)) symbols)))))))
            (quux (n)
              `(progn ,@(mapcar (lambda (x) `(frob ,x))
@@ -56,7 +54,7 @@
   (let ((values (make-list (length indices))))
     (lambda (vars)
       #+nil(declare (optimize speed (safety 0) (debug 0)))
-      (declare (vars vars))
+      (declare (simple-vector vars))
       (apply fn (map-into values (lambda (i) (aref vars i)) indices)))))
 
 (defun wrap-predicate (predicate indices)
@@ -87,7 +85,7 @@
         (n (length domains))
         (pos 0))
     (declare (optimize speed (safety 0) (debug 0)))
-    (declare (vars domains state vars constraint-vector))
+    (declare (simple-vector domains state vars constraint-vector))
     (declare (function fn))
     (declare (fixnum pos n))
     (macrolet ((update-vars ()
@@ -134,7 +132,7 @@
 (defun build-constraint-vector (vars constraints)
   (let ((constraint-vector (make-array (length vars) :initial-element nil))
         (var-indices (make-var-indices vars)))
-    (declare (vars constraint-vector))
+    (declare (simple-vector constraint-vector))
     (dolist (constraint constraints constraint-vector)
       (let* ((indices (constraint-indices constraint var-indices))
              (max-index (find-max indices)))
@@ -161,7 +159,7 @@
 (defun search-one (vars)
   (map-solutions
    (lambda (solution)
-     (declare (vars solution))
+     (declare (simple-vector solution))
      (return-from search-one (coerce solution 'list)))
    vars))
 
@@ -169,7 +167,7 @@
   (let (solutions)
     (map-solutions
      (lambda (solution)
-       (declare (vars solution))
+       (declare (simple-vector solution))
        (push (coerce solution 'list) solutions))
      vars)
     (nreverse solutions)))
@@ -182,7 +180,7 @@
       (block nil
         (map-solutions
          (lambda (solution)
-           (declare (vars solution))
+           (declare (simple-vector solution))
            (push (coerce solution 'list) solutions)
            (incf count)
            (when (= count n)
