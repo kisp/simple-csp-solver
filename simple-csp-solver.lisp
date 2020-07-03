@@ -16,8 +16,9 @@
               (var-name self)
               (length (var-constraints self))))))
 
-(defstruct (constraint (:constructor %make-constraint))
-  predicate vars)
+(defclass constraint ()
+  ((predicate :accessor constraint-predicate :initarg :predicate)
+   (vars :accessor constraint-vars :initarg :vars)))
 
 (defmethod print-object ((self constraint) stream)
   (pprint-logical-block (stream nil)
@@ -28,10 +29,21 @@
 
 (defun constraint (predicate var &rest vars)
   (let ((vars (cons var vars)))
-    (let ((constraint (%make-constraint :predicate predicate
-                                        :vars vars)))
+    (let ((constraint (make-instance 'constraint
+                                     :predicate predicate
+                                     :vars vars)))
       (dolist (var vars constraint)
         (push constraint (var-constraints var))))))
+
+(defclass global-constraint (constraint)
+  ())
+
+(defun global-constraint (predicate vars)
+  (let ((constraint (make-instance 'global-constraint
+                                   :predicate predicate
+                                   :vars vars)))
+    (dolist (var vars constraint)
+      (push constraint (var-constraints var)))))
 
 (macrolet ((frob (n)
              (let ((symbols (loop repeat n collect (gensym))))
@@ -73,6 +85,18 @@
     (11 (funcall-with-aref-11 predicate indices))
     (12 (funcall-with-aref-12 predicate indices))
     (t (apply-with-aref predicate indices))))
+
+(defmethod build-constraint-predicate ((constraint constraint) indices)
+  (wrap-predicate (constraint-predicate constraint) indices))
+
+(defmethod build-constraint-predicate ((constraint global-constraint) indices)
+  (let ((prefix-indices (butlast indices))
+        (last-index (car (last indices)))
+        (prefix-list (make-list (1- (length indices)))))
+    (lambda (vars)
+      (funcall (constraint-predicate constraint)
+               (map-into prefix-list (lambda (i) (aref vars i)) prefix-indices)
+               (aref vars last-index)))))
 
 (defun find-max (list)
   (declare (cons list))
@@ -133,18 +157,28 @@
   (mapcar (lambda (var) (gethash var var-indices))
           (constraint-vars constraint)))
 
+(defmethod add-constraint-to-constraint-vector ((constraint constraint) constraint-vector var-indices)
+  (let* ((indices (constraint-indices constraint var-indices))
+         (max-index (find-max indices)))
+    (push
+     (build-constraint-predicate constraint indices)
+     (aref constraint-vector max-index))))
+
+(defmethod add-constraint-to-constraint-vector ((constraint global-constraint) constraint-vector var-indices)
+  (let ((indices (sort (constraint-indices constraint var-indices) #'<)))
+    (loop
+       for i from 2 to (length indices)
+       for sub-indices = (subseq indices 0 i)
+       for max-index = (nth (1- i) indices)
+       do (push
+           (build-constraint-predicate constraint sub-indices)
+           (aref constraint-vector max-index)))))
+
 (defun build-constraint-vector (vars constraints)
   (let ((constraint-vector (make-array (length vars) :initial-element nil))
         (var-indices (make-var-indices vars)))
-    (declare (simple-vector constraint-vector))
     (dolist (constraint constraints constraint-vector)
-      (let* ((indices (constraint-indices constraint var-indices))
-             (max-index (find-max indices)))
-        (push
-         (wrap-predicate
-          (constraint-predicate constraint)
-          indices)
-         (aref constraint-vector max-index))))))
+      (add-constraint-to-constraint-vector constraint constraint-vector var-indices))))
 
 (defun collect-constraints (vars)
   (let ((hash (make-hash-table)))

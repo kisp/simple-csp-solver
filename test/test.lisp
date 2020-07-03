@@ -256,3 +256,21 @@
            (vars (loop repeat n collect (make-var (iota n)))))
       (pairwise-distinct vars)
       (is (equal (iota n) (search-one vars))))))
+
+(deftest pairwise-distinct.global.50
+  (let* ((n 50)
+         (vars (loop repeat n collect (make-var (iota n)))))
+    (global-constraint (lambda (prefix x) (not (member x prefix))) vars)
+    (is (equal (iota n) (search-one vars)))))
+
+(deftest pairwise-distinct.global.500
+  (let* ((n 500)
+         (vars (loop repeat n collect (make-var (iota n)))))
+    (global-constraint (lambda (prefix x) (not (member x prefix))) vars)
+    (is (equal (iota n) (search-one vars)))))
+
+(deftest pairwise-distinct.global.1000
+  (let* ((n 1000)
+         (vars (loop repeat n collect (make-var (iota n)))))
+    (global-constraint (lambda (prefix x) (not (member x prefix))) vars)
+    (is (equal (iota n) (search-one vars)))))

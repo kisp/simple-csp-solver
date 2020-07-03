@@ -12,4 +12,5 @@
    #:search-one
    #:search-all
    #:search-n
-   #:count-solutions))
+   #:count-solutions
+   #:global-constraint))
