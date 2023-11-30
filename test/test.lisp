@@ -2,15 +2,15 @@
 
 (in-package :simple-csp-solver-test)
 
-(defsuite* :simple-csp-solver-test)
+(def-suite* :simple-csp-solver-test)
 
-(deftest test.1
+(def-test test.1 ()
   (is (equal '(1 2 3) (var-domain (make-var '(1 2 3)))))
   (is (equal '(a b) (var-domain (make-var '(a b)))))
   (is (equal 'foo (var-name (make-var '(a b) 'foo))))
   (is (equal nil (var-name (make-var '(a b))))))
 
-(deftest test.2
+(def-test test.2 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(1 2 3) 'b)))
     (is (null (var-constraints a)))
@@ -19,36 +19,36 @@
     (is (not (null (var-constraints a))))
     (is (not (null (var-constraints b))))))
 
-(deftest test.3
+(def-test test.3 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(1 2 3) 'b)))
     (is (equal '(1 1) (search-one (list a b))))))
 
-(deftest test.4
+(def-test test.4 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(a b) 'b)))
     (is (equal '(1 a) (search-one (list a b))))))
 
-(deftest test.5
+(def-test test.5 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(1 2 3) 'b))
         (c (make-var '(1 2 3) 'c)))
     (constraint #'< a b c)
     (is (equal '(1 2 3) (search-one (list a b c))))))
 
-(deftest test.6
+(def-test test.6 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(a b) 'b)))
     (is (equal '((1 a) (1 b) (2 a) (2 b) (3 a) (3 b))
                (search-all (list a b))))))
 
-(deftest test.7
+(def-test test.7 ()
   (let ((a (make-var '(10 20 30) 'a))
         (b (make-var '(1 2 3) 'b)))
     (constraint #'< a b)
     (is (equal nil (search-all (list a b))))))
 
-(deftest test.8
+(def-test test.8 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(1 2 3) 'b)))
     (constraint #'< a b)
@@ -56,7 +56,7 @@
     (is (equal nil (search-all (list a b))))
     (is (equal nil (search-one (list a b))))))
 
-(deftest test.9
+(def-test test.9 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(1 2 3) 'b)))
     (constraint #'<= a b)
@@ -64,7 +64,7 @@
     (is (equal '((1 1) (2 2) (3 3))
                (search-all (list a b))))))
 
-(deftest test.10
+(def-test test.10 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(a b) 'b)))
     (is (equal '((1 a) (1 b) (2 a) (2 b) (3 a) (3 b))
@@ -77,14 +77,14 @@
                (search-n (list a b) 0)))
     (signals error (search-n (list a b) -1))))
 
-(deftest test.11
+(def-test test.11 ()
   (let ((a (make-var '(1 2 3) 'a))
         (b (make-var '(a b) 'b)))
     (is (equal 6 (count-solutions (list a b))))
     (is (equal 3 (count-solutions (list a))))
     (is (equal 0 (count-solutions (list))))))
 
-(deftest test.12
+(def-test test.12 ()
   (let* ((d (iota 15 :start 1))
          (a (make-var d 'a))
          (b (make-var d 'b))
@@ -97,7 +97,7 @@
     (is (equal '((3 4 5) (5 12 13) (6 8 10) (9 12 15))
                (search-all (list a b c))))))
 
-(deftest test.13
+(def-test test.13 ()
   (is (equal
        '(0 0 0 0 1 1 1 1 1 2 2 2 3 3 4 4 5 5 5 6 6 6 6 6 8 9 9 9 10 11)
        (mapcar
@@ -114,7 +114,7 @@
             (count-solutions (list a b c))))
         (iota 30 :start 1)))))
 
-(deftest test.14
+(def-test test.14 ()
   (is (equal
        '(0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 0 0 1 0 0 0 0 2 1 0 0 1 1)
        (mapcar
@@ -132,7 +132,7 @@
             (count-solutions (list a b c))))
         (iota 30 :start 1)))))
 
-(deftest test.15
+(def-test test.15 ()
   (labels ((diff (x y d)
              (= d (abs (- x y))))
            (pairwise-distinct (vars)
@@ -171,7 +171,7 @@
     (is (equal 32 (count-rows 7)))
     (is (equal 40 (count-rows 8)))))
 
-(deftest test.16
+(def-test test.16 ()
   (let* ((d (iota 5 :start 1))
          (a (make-var d 'a))
          (b (make-var d 'b))
@@ -207,7 +207,7 @@
     (is (equal '((2 3 5 5)) (search-all (list a b d c))))
     (is (equal '((3 2 5 5)) (search-all (list b a d c))))))
 
-(deftest test.17
+(def-test test.17 ()
   (let ((a (make-var '(1 2 3)))
         (b (make-var '(1 2 3))))
     (constraint (curry #'= 2) a)
@@ -215,7 +215,7 @@
     (is (equal '((2 3))
                (search-all (list a b))))))
 
-(deftest test.18
+(def-test test.18 ()
   (labels ((build-vars (n)
              (let ((vars (loop for i from 1 to n collect (make-var (list 0 i)))))
                (apply #'constraint #'= vars)
@@ -224,7 +224,7 @@
           do (is (equal (list (make-list n :initial-element 0))
                         (search-all (build-vars n)))))))
 
-(deftest pairwise-distinct.50
+(def-test pairwise-distinct.50 ()
   (labels ((pairwise-distinct (vars)
              (loop for tail on vars
                 for x = (car tail)
@@ -235,7 +235,7 @@
       (pairwise-distinct vars)
       (is (equal (iota n) (search-one vars))))))
 
-(deftest pairwise-distinct.500
+(def-test pairwise-distinct.500 ()
   (labels ((pairwise-distinct (vars)
              (loop for tail on vars
                 for x = (car tail)
@@ -246,7 +246,7 @@
       (pairwise-distinct vars)
       (is (equal (iota n) (search-one vars))))))
 
-(deftest pairwise-distinct.1000
+(def-test pairwise-distinct.1000 ()
   (labels ((pairwise-distinct (vars)
              (loop for tail on vars
                 for x = (car tail)

@@ -18,4 +18,4 @@
 (defmethod perform ((op test-op)
                     (system (eql (find-system :simple-csp-solver))))
   (oos 'load-op :simple-csp-solver-test)
-  (funcall (intern "RUN!" "MYAM") :simple-csp-solver-test))
+  (funcall (intern "RUN!" "FIVEAM") :simple-csp-solver-test))

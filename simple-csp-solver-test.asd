@@ -8,7 +8,7 @@
   :components ((:module "test"
                 :components ((:file "package")
                              (:file "test" :depends-on ("package")))))
-  :depends-on (:simple-csp-solver :myam :alexandria))
+  :depends-on (:simple-csp-solver :fiveam :alexandria))
 
 (defmethod perform ((op test-op)
                     (system (eql (find-system :simple-csp-solver-test))))
